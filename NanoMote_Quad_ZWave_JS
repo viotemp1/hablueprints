@@ -1,0 +1,90 @@
+blueprint:
+  name: NanoMote Quad (ZWave-JS)
+  description: Create automations for the NanoMote Quad using ZWave-JS Integraetion
+  domain: automation
+  input:
+    zwave_device:
+      name: AeoTec NanoMote Quad 
+      description: List of available NanoMotes.
+      selector:
+        device:
+          integration: zwave_js
+          manufacturer: Aeotec Ltd.
+          model: ZWA003
+    button_1_pressed:
+      name: Button 1 - Large Button Pressed
+      description: Action to run, when button 1 is pressed.
+      default: []
+      selector:
+        action: {}
+    button_1_held:
+      name: Button 1 - Large Button Held
+      description: Action to run, when the button 1 is held.
+      default: []
+      selector:
+        action: {}
+    button_2_pressed:
+      name: Button 2 - Lower Left Button Pressed
+      description: Action to run, when the button 2 pressed.
+      default: []
+      selector:
+        action: {}
+    button_2_held:
+      name: Button 2 - Lower Left Button Held
+      description: Action to run, when the button 2 is held.
+      default: []
+      selector:
+        action: {}
+    button_3_pressed:
+      name: Button 3 - Lower Right Button Pressed
+      description: Action to run, when the button 3 is pressed.
+      default: []
+      selector:
+        action: {}
+    button_3_held:
+      name: Button 3 - Lower Right Button Held
+      description: Action to run, when the button 3 is held.
+      default: []
+      selector:
+        action: {}
+    button_4_pressed:
+      name: Button 4 - Center Button Pressed
+      description: Action to run, when the button 4 is pressed.
+      default: []
+      selector:
+        action: {}
+    button_4_held:
+      name: Button 4 - Center Button Held
+      description: Action to run, when the button 4 is held.
+      default: []
+      selector:
+        action: {}  
+mode: single
+max_exceeded: silent
+variables:
+  device_id: !input 'zwave_device'
+trigger:
+- platform: event
+  event_type: zwave_js_value_notification
+condition: '{{ trigger.event.data.device_id == device_id }}'
+action:
+- variables:
+    button_id: '{{ trigger.event.data.property_key_name }}'
+    press_count: '{{ trigger.event.data.value }}'
+- choose:
+  - conditions: '{{ button_id == "001" and press_count == "KeyPressed" }}'
+    sequence: !input 'button_1_pressed'
+  - conditions: '{{ button_id == "002" and press_count == "KeyPressed" }}'
+    sequence: !input 'button_2_pressed'
+  - conditions: '{{ button_id == "003" and press_count == "KeyPressed" }}'
+    sequence: !input 'button_3_pressed'
+  - conditions: '{{ button_id == "004" and press_count == "KeyPressed" }}'
+    sequence: !input 'button_4_pressed'
+  - conditions: '{{ button_id == "001" and press_count == "KeyHeldDown" }}'
+    sequence: !input 'button_1_held'
+  - conditions: '{{ button_id == "002" and press_count == "KeyHeldDown" }}'
+    sequence: !input 'button_2_held'
+  - conditions: '{{ button_id == "003" and press_count == "KeyHeldDown" }}'
+    sequence: !input 'button_3_held'
+  - conditions: '{{ button_id == "004" and press_count == "KeyHeldDown" }}'
+    sequence: !input 'button_4_held'
